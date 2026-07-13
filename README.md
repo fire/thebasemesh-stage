@@ -6,9 +6,11 @@ scale with basic UVs.
 
 ## What this is
 
-thebasemesh.com distributes each model as a ZIP of `.fbx` / `.glb` / `.obj`. This repo converts the **OBJ**
-originals to **OpenUSD ASCII** (`.usda`) so they drop straight into USD pipelines (Omniverse, usdview,
-Pixar OpenUSD, Godot, Blender).
+thebasemesh.com distributes each model as a ZIP of `.fbx` / `.glb` / `.obj`. This repo converts the **FBX**
+source to **OpenUSD ASCII** (`.usda`) so they drop straight into USD pipelines (Omniverse, usdview,
+Pixar OpenUSD, Godot, Blender). FBX is chosen over OBJ (identical quad topology) because it also carries
+custom split normals / smoothing / material metadata; the `.glb` is the triangulated derivative and is
+**not** used (it would destroy the n-gon topology).
 
 - **`models/*.usda`** — one ASCII USD file per model (Z-up, meters, materials + UVs + normals).
 - **N-gon / quad topology is preserved** — the converter does **not** triangulate, so the original
@@ -23,13 +25,13 @@ follow-up (paginate → download → convert with the same pipeline).
 
 ## How it was made
 
-Each OBJ is converted with **Blender** (headless), preserving topology:
+Each FBX is converted with **Blender** (headless), preserving topology:
 
 ```
-blender --background --factory-startup --python obj_to_usda_batch.py -- <obj_dir> <usda_dir>
+blender --background --factory-startup --python fbx_to_usda_batch.py -- <fbx_dir> <usda_dir>
 ```
 
-`bpy.ops.wm.obj_import` → `bpy.ops.wm.usd_export` with materials/UVs/normals, no triangulation.
+`bpy.ops.import_scene.fbx` → `bpy.ops.wm.usd_export` with materials/UVs/normals, no triangulation.
 
 ## License
 
